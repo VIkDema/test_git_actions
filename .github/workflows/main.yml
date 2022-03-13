@@ -25,6 +25,8 @@ jobs:
       # Проверить соблюдена ли структура файлов по шаблону
       # Запустить парсер для необходимых файлов
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Run a one-line script
         run: echo Hello, world from check-lab!
       - name: ls
