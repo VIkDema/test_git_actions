@@ -6,9 +6,6 @@ on:
     types: [opened, synchronize, reopened, edited]
 
   workflow_dispatch:
-env:
-  PATH_TO_LAB: 'test'
-  FILE_NAME: 'test'
 
 
 jobs:
@@ -26,8 +23,8 @@ jobs:
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
-          os.system("SETX {0} {1} /M".format("PATH_TO_LAB", pr_name[:index]))
-          os.system("SETX {0} {1} /M".format("FILE_NAME", pr_name[index+1:]+'.ipynb'))
+          pr_name[index]='/'
+          pr-name += '.ipynb'
           END
       - name: test1
         run: | 
