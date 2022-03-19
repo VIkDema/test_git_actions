@@ -23,8 +23,7 @@ jobs:
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
-          pr_name[index]='/'
-          pr-name += '.ipynb'
+          print(pr_name[:index]+'/'+pr_name[:index+1]+'.ipynb')
           END
       - name: test1
         run: | 
