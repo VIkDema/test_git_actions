@@ -26,14 +26,8 @@ jobs:
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
-          print(os.environ)
-          print(os.environ["PATH_TO_LAB"])
-          print(os.environ["FILE_NAME"])
-          os.putenv("PATH_TO_LAB", pr_name[:index])
-          os.putenv("FILE_NAME", pr_name[index+1:]+'.ipynb')
-          print(os.environ)
-          print(os.environ["PATH_TO_LAB"])
-          print(os.environ["FILE_NAME"])
+          os.system("SETX {0} {1} /M".format("PATH_TO_LAB", pr_name[:index]))
+          os.system("SETX {0} {1} /M".format("FILE_NAME", pr_name[index+1:]+'.ipynb'))
           END
       - name: test1
         run: | 
