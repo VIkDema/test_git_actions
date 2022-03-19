@@ -17,4 +17,8 @@ jobs:
       - name: Имя файла
         run: echo ${{github.event.pull_request.title}}
       - name: Тест питона
-        run: python3 --version
+        run: python3 END
+          print('Hello,world')
+          END
+      - name: test
+        run: ls
