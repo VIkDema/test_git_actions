@@ -25,4 +25,4 @@ jobs:
       - name: Путь до файла
         run: cat FILE_PATH.txt
       - name: Содержимое файла
-        run: echo FILE_PATH.txt | cat  
+        run: cat FILE_PATH.txt | cat  
