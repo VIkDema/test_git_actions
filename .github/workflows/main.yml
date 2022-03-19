@@ -14,12 +14,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Имя файла
+      - name: Имя PR
         run: echo ${{github.event.pull_request.title}}
       - name: Тест питона
         run: |
           python3 << END
-          print('Hello,world')
+          import os
+          pr_name = '${{github.event.pull_request.title}}'
+          index = rfind(pr_name,'_')
+          os.environ["PATH_TO_LAB"] = pr_name[:index]
+          os.environ["FILE_NAME"] = pr_name[index:]
+          print(pr_name[:index])
+          print(pr_name[index:])
           END
       - name: test
         run: ls
