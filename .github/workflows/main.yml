@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   
 env:
-  PATH: test
+  FILE_PATH: test
 
 jobs:
   check_and_update_ipynb:
@@ -21,7 +21,7 @@ jobs:
         run: echo ${{github.event.pull_request.title}}
       - name: Тест питона
         run: |
-          python3 << END | $PATH
+          python3 << END | $FILE_PATH
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
@@ -30,4 +30,4 @@ jobs:
       - name: test1
         run: cat path.txt
       - name: test
-        run: echo $PATH
+        run: echo $FILE_PATH
