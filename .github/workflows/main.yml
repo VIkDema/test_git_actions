@@ -8,15 +8,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-lab-number:
+  check_and_update_ipynb:
   # проверка на название pull request
   # Можно добавлять labels
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run a one-line script
+      - name: Имя файла
         run: echo ${{github.event.pull_request.title}}
-      - name : GITHUB CONTEXT
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
