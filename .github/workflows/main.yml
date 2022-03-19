@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run a one-line script
-        run: echo ${{github.event.pull_request.name}}
+        run: echo ${{github.event.pull_request.title}}
       - name : GITHUB CONTEXT
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
