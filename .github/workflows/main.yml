@@ -9,20 +9,20 @@ on:
 
 jobs:
   check_and_update_ipynb:
-  # проверка на название pull request
-  # Можно добавлять labels
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Имя PR
         run: echo ${{github.event.pull_request.title}}
-      - name: Тест питона
+      - name: Получение пути до файла
         run: |
           python3 << END > FILE_PATH.txt
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
-          print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb')
+          print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb\n')
           END
-      - name: test
+      - name: Путь до файла
         run: cat FILE_PATH.txt
+      - name: Содержимое файла
+        run: echo FILE_PATH.txt | cat  
