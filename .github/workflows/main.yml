@@ -6,6 +6,10 @@ on:
     types: [opened, synchronize, reopened, edited]
 
   workflow_dispatch:
+env:
+  PATH_TO_LAB: ''
+  FILE_NAME: ''
+
 
 jobs:
   check_and_update_ipynb:
@@ -28,6 +32,6 @@ jobs:
       - name: test1
         run: | 
           echo $PATH_TO_LAB
-          echo $PATH_TO_LAB
+          echo $FILE_NAME
       - name: test
         run: ls
