@@ -6,9 +6,6 @@ on:
     types: [opened, synchronize, reopened, edited]
 
   workflow_dispatch:
-  
-env:
-  FILE_PATH: test
 
 jobs:
   check_and_update_ipynb:
@@ -21,11 +18,11 @@ jobs:
         run: echo ${{github.event.pull_request.title}}
       - name: Тест питона
         run: |
-          python3 << END | $FILE_PATH = 
+          python3 << END > FILE_PATH.txt
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
           print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb')
           END
       - name: test
-        run: echo $FILE_PATH
+        run: echo << FILE_PATH.txt
