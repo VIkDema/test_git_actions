@@ -24,10 +24,8 @@ jobs:
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
           print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb')
-          END
+          END > path.txt
       - name: test1
-        run: | 
-          echo $PATH_TO_LAB
-          echo $FILE_NAME
+        run: cat path.txt
       - name: test
         run: ls
