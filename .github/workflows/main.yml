@@ -26,8 +26,8 @@ jobs:
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
-          os.environ["PATH_TO_LAB"] = pr_name[:index]
-          os.environ["FILE_NAME"] = pr_name[index+1:]+'.ipynb'
+          os.environ.setdefault("PATH_TO_LAB", pr_name[:index])
+          os.environ.setdefault("FILE_NAME", pr_name[index+1:]+'.ipynb')
           END
       - name: test1
         run: | 
