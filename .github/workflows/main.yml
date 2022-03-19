@@ -27,7 +27,5 @@ jobs:
           index = pr_name.rfind('_')
           print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb')
           END
-      - name: test1
-        run: cat path.txt
       - name: test
         run: echo $FILE_PATH
