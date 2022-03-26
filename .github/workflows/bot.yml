@@ -43,7 +43,7 @@ jobs:
         run: ls
       - name: test
         run: |
-            echo << END > parser.py
+            echo << END
             import json
             import os
             import sys
