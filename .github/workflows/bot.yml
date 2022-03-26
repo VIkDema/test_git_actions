@@ -90,6 +90,7 @@ jobs:
                       print(f'::set-output name=check_rep_error::Выполнение работы')
                   if j==4:
                       print(f'::set-output name=check_rep_error::Выводы')
+            '''
             for param in sys.argv:
               print (param)
             try:
@@ -101,15 +102,14 @@ jobs:
             path = f.read()
             
             os.system('ls')
-            
             f.close
             print(path)
             try:
                 notebook = open(path)
             except FileNotFoundError:
                 print("No file")
-            
-            data = json.load(notebook)
+            '''
+            data = json.load(sys.argv[1])
             notebook.close()
             markdown, code, language = jsonParce(data)
             changePoints(markdown)
@@ -117,7 +117,7 @@ jobs:
       - name: CheckRep
         id: changePoints
         run: |
-          python3 parser.py $(cat $(cat FILE_PATH.txt))
+          python3 parser.py "$(cat $(cat FILE_PATH.txt))"
       - name: Approve/Request changes pull request
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
