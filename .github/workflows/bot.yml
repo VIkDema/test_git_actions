@@ -34,7 +34,7 @@ jobs:
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
-          print('/'+pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb\n')
+          print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb\n')
           END
           cat FILE_PATH.txt
       - name: Содержимое файла
@@ -44,9 +44,10 @@ jobs:
       - name: CheckRep
         id: changePoints
         run: |
-            python3 <<END
+            python3 <<END hello,world
             import json
             import os
+            import sys
             
             def jsonParce(data):
               markdown = []
@@ -90,7 +91,8 @@ jobs:
                       print(f'::set-output name=check_rep_error::Выполнение работы')
                   if j==4:
                       print(f'::set-output name=check_rep_error::Выводы')
-            
+            for param in sys.argv:
+              print (param)
             try:
                 #f = open('FILE_PATH.txt', encoding='utf-8')
                 f = open('FILE_PATH.txt')
