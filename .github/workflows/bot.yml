@@ -89,17 +89,17 @@ jobs:
                   if j==4:
                       print(f'::set-output name=check_rep_error::Выводы')
             
-            try:
+            '''try:
               f = open('FILE_PATH.txt', encoding='utf-8')
             except FileNotFoundError:
               print("No file FILE_PATH")
             
             path = f.read()
             
-            f.close
+            f.close'''
             
             try:
-              notebook = open(path, encoding='utf-8')
+              notebook = open('FILE_PATH.txt', encoding='utf-8')
             except FileNotFoundError:
               print("No file")
             
