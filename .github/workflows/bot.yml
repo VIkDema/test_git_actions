@@ -46,6 +46,7 @@ jobs:
         run: |
             python3 <<END
             import json
+            import os
             
             def jsonParce(data):
               markdown = []
@@ -97,6 +98,8 @@ jobs:
                 print("No file FILE_PATH")
             
             path = f.read()
+            
+            os.system('ls')
             
             f.close
             print(path)
