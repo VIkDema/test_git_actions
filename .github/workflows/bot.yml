@@ -34,19 +34,16 @@ jobs:
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
-          print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb\n')
+          print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb',end='')
           END
           cat FILE_PATH.txt
       - name: Содержимое файла
-        run: cat FILE_PATH.txt
-      - name: debug
-        run: ls
-      - name: test
+        run: cat $(cat FILE_PATH.txt)
+      - name: CheckRep
+        id: changePoints
         run: |
-            cat << END > parser.py
+            python3 <<END
             import json
-            import os
-            import sys
             
             def jsonParce(data):
               markdown = []
@@ -90,34 +87,26 @@ jobs:
                       print(f'::set-output name=check_rep_error::Выполнение работы')
                   if j==4:
                       print(f'::set-output name=check_rep_error::Выводы')
-            '''
-            for param in sys.argv:
-              print (param)
+            
             try:
-                #f = open('FILE_PATH.txt', encoding='utf-8')
-                f = open('FILE_PATH.txt')
+              f = open('FILE_PATH.txt', encoding='utf-8')
             except FileNotFoundError:
-                print("No file FILE_PATH")
+              print("No file FILE_PATH")
             
             path = f.read()
             
-            os.system('ls')
             f.close
-            print(path)
+            
             try:
-                notebook = open(path)
+              notebook = open(path, encoding='utf-8')
             except FileNotFoundError:
-                print("No file")
-            '''
-            data = json.loads(sys.argv[1])
-            #notebook.close()
+              print("No file")
+            
+            data = json.load(notebook)
+            notebook.close()
             markdown, code, language = jsonParce(data)
             changePoints(markdown)
             END
-      - name: CheckRep
-        id: changePoints
-        run: |
-          python3 parser.py "$(cat $(cat FILE_PATH.txt))"
       - name: Approve/Request changes pull request
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
