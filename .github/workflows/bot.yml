@@ -44,7 +44,7 @@ jobs:
       - name: CheckRep
         id: changePoints
         run: |
-            python3 <<END 
+            python3 <<END < hello,world
             import json
             import os
             import sys
@@ -114,7 +114,7 @@ jobs:
             notebook.close()
             markdown, code, language = jsonParce(data)
             changePoints(markdown)
-            END hello,world
+            END
       - name: Approve/Request changes pull request
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
