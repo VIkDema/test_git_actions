@@ -41,7 +41,7 @@ jobs:
       - name: Содержимое файла
         run: cat $(cat FILE_PATH.txt)
       - name: CheckRep
-      - id: changePoints
+        id: changePoints
         run: |
             python3 <<END
             import json
