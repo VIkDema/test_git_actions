@@ -99,7 +99,7 @@ jobs:
             path = f.read()
             
             f.close
-            
+            print(path)
             try:
                 notebook = open(path)
             except FileNotFoundError:
