@@ -77,7 +77,7 @@ jobs:
                   #print(f'::set-output name=check_rep_error::Кажется, всё хорошо.')
               else:
                   print(f'::set-output name=check_report::0')
-                  print(f'f'::set-output name=check_rep_error::Не найдено: ')
+                  print(f'::set-output name=check_rep_error::Не найдено: ')
                   if j==0:
                       print(f'::set-output name=check_rep_error::Цель работы')
                   if j==1:
