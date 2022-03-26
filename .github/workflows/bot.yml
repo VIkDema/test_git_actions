@@ -26,7 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/checkout@v2.1.0
       - name: Имя PR
         run: echo ${{github.event.pull_request.title}}
       - name: Путь до файла
@@ -40,6 +39,8 @@ jobs:
           cat FILE_PATH.txt
       - name: Содержимое файла
         run: cat $(cat FILE_PATH.txt)
+      - name: debug
+        run: ls
       - name: CheckRep
         id: changePoints
         run: |
@@ -99,7 +100,7 @@ jobs:
             f.close'''
             
             try:
-              notebook = open('FILE_PATH.txt', encoding='utf-8')
+              notebook = open(path, encoding='utf-8')
             except FileNotFoundError:
               print("No file")
             
