@@ -34,7 +34,7 @@ jobs:
           import os
           pr_name = '${{github.event.pull_request.title}}'
           index = pr_name.rfind('_')
-          print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb\n')
+          print('/'+pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb\n')
           END
           cat FILE_PATH.txt
       - name: Содержимое файла
