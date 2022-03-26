@@ -41,10 +41,9 @@ jobs:
         run: cat FILE_PATH.txt
       - name: debug
         run: ls
-      - name: CheckRep
-        id: changePoints
+      - name: test
         run: |
-            python3 <<END < $(echo hello, world)
+            echo << END > parser.py
             import json
             import os
             import sys
@@ -115,6 +114,10 @@ jobs:
             markdown, code, language = jsonParce(data)
             changePoints(markdown)
             END
+      - name: CheckRep
+        id: changePoints
+        run: |
+          python3 parser.py $(cat $(cat FILE_PATH.txt)
       - name: Approve/Request changes pull request
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
