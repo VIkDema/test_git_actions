@@ -4,9 +4,7 @@ on:
   pull_request:
     branches: [ master, main ]
     types: [opened, synchronize, reopened, edited]
-
-  workflow_dispatch:
-
+    
 jobs:
   get-date-and-time:
     runs-on: ubuntu-latest
