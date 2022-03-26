@@ -44,7 +44,7 @@ jobs:
       - name: CheckRep
         id: changePoints
         run: |
-            python3 <<END < cat FILE_PATH.txt
+            python3 <<END < $(echo hello, world)
             import json
             import os
             import sys
