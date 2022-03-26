@@ -38,7 +38,7 @@ jobs:
           END
           cat FILE_PATH.txt
       - name: Содержимое файла
-        run: cat $(cat FILE_PATH.txt)
+        run: cat FILE_PATH.txt
       - name: debug
         run: ls
       - name: CheckRep
