@@ -103,7 +103,7 @@ jobs:
                   if j==4:
                       print(f'::set-output name=check_rep_error::Выводы')
 
-            path = ${{steps.check_path.outputs.path}}
+            path = '${{steps.check_path.outputs.path}}'
             
             print(path)
             
