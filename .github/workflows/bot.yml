@@ -110,7 +110,7 @@ jobs:
             
             f.close
             '''
-            if ${{steps.check_path.outputs.check_file == 1}}:
+            if ${{steps.check_path.outputs.check_file}} == 1:
               print('check +')
             else:
               print('check -')
