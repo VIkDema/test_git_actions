@@ -111,7 +111,7 @@ jobs:
             
             f.close
             '''
-            path = ${{ env.FILE_PATH }}
+            path = '${{ env.FILE_PATH }}'
 
             print(path)
 
