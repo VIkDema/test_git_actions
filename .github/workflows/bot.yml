@@ -31,7 +31,7 @@ jobs:
       - name: Путь до файла
         id: check_path
         run: |
-          python3 << END >> $GITHUB_ENV
+          python3 << END
           import os.path
           
           def get_and_check_path_file(pr_name):
@@ -50,9 +50,8 @@ jobs:
 
           pr_name =  '${{github.event.pull_request.title}}'
           path = get_and_check_path_file(pr_name)
-          print("FILE_PATH =" + path, end='')
+          #print("FILE_PATH =" + path, end='')
           END
-          echo ${{ env.FILE_PATH }}
       - name: CheckRep
         id: changePoints
         run: |
@@ -111,7 +110,11 @@ jobs:
             
             f.close
             '''
-            path = '${{ env.FILE_PATH }}'
+            if ${{steps.check_path.outputs.check_file == 1}}:
+              print('check +')
+            else:
+              print('check -')
+            path = ''
 
             print(path)
 
