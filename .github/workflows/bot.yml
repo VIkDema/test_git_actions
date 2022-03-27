@@ -29,7 +29,7 @@ jobs:
       - name: Имя PR
         run: echo ${{github.event.pull_request.title}}
       - name: Путь до файла
-        id: changePoints
+        id: check_path
         run: |
           python3 << END >> $GITHUB_ENV
           import os.path
@@ -38,13 +38,12 @@ jobs:
             items = pr_name.split('_')
             path = '/'.join(items)+'.ipynb'
             if len(items) != 3 or not items[0].isdigit():
-              print(f'::set-output name=check_report::0')
               print(f'::set-output name=check_rep_error::Название PR не соотвествует шаблону <Номер группы>_<ФИО>_lab<номер лабораторной>! ')
               return ''
             if not os.path.exists(path):
-              print(f'::set-output name=check_report::0')
               print(f'::set-output name=check_rep_error::Файл отсутсвует по пути: '+ path )
               return ''
+            print(f'::set-output name=check_rep_error::')
             return path
 
           pr_name =  '${{github.event.pull_request.title}}'
@@ -113,7 +112,7 @@ jobs:
             f.close
             '''
             path = ${{ env.FILE_PATH }}
-            
+
             print(path)
 
             if path:
@@ -131,5 +130,4 @@ jobs:
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           event: ${{ steps.changePoints.outputs.check_report == 1 && 'APPROVE' || 'REQUEST_CHANGES' }}
-          body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{ steps.changePoints.outputs.check_rep_error }}"
-
+          body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.check_path.outputs.check_rep_error !='' && steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{ steps.changePoints.outputs.check_rep_error || steps.check_path.outputs.check_rep_error }}"
