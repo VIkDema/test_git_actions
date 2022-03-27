@@ -45,13 +45,13 @@ jobs:
             path=''
 
           if path and not os.path.exists(path):
-            print(f'::set-output name=check_file_error::Файл не найден по шаблону <Номер группы>_<ФИО>_lab<номер лабораторной> не найден ' )
+            print(f'::set-output name=check_file_error::Файл не найден по шаблону <Номер группы>/<ФИО>/lab<номер лабораторной>.ipynb' )
             path=''
 
           if path:
             print(f'::set-output name=check_file::1')
             print(f'::set-output name=path::'+path)
-          else:
+          eles:
             print(f'::set-output name=check_file::0')
           END
       - name: CheckRep
@@ -102,24 +102,11 @@ jobs:
                       print(f'::set-output name=check_rep_error::Выполнение работы')
                   if j==4:
                       print(f'::set-output name=check_rep_error::Выводы')
-            '''
-            try:
-              f = open('FILE_PATH.txt', encoding='utf-8')
-            except FileNotFoundError:
-              print("No file FILE_PATH")
-            
-            path = f.read()
-            
-            f.close
-            '''
-            if ${{steps.check_path.outputs.check_file}} == 1:
-              print('check +')
-            else:
-              print('check -')
-            path = ''
 
+            path = ${{steps.check_path.outputs.path}}
+            
             print(path)
-
+            
             if path:
               try:
                 notebook = open(path, encoding='utf-8')
