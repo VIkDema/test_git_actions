@@ -52,7 +52,7 @@ jobs:
 
           pr_name =  '${{github.event.pull_request.title}}'
           path = get_and_check_path_file(pr_name)
-          print("FILE_PATH = " + path, end='')
+          print("FILE_PATH =" + path, end='')
           END
           echo ${{ env.FILE_PATH }}
       - name: CheckRep
