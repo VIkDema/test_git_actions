@@ -51,7 +51,7 @@ jobs:
           if path:
             print(f'::set-output name=check_file::1')
             print(f'::set-output name=path::'+path)
-          eles:
+          else:
             print(f'::set-output name=check_file::0')
           END
       - name: CheckRep
