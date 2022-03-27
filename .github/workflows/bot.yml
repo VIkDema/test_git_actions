@@ -35,8 +35,6 @@ jobs:
           import os.path
           
           def get_and_check_path_file(pr_name):
-            print(f'::set-output name=check_file_error::Цель работы')
-            return ''
             items = pr_name.split('_')
             path = '/'.join(items)+'.ipynb'
             if len(items) != 3 or not items[0].isdigit():
