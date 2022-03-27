@@ -41,7 +41,7 @@ jobs:
               print(f'::set-output name=check_rep_error::Название PR не соотвествует шаблону <Номер группы>_<ФИО>_lab<номер лабораторной>! ')
               return ''
             if not os.path.exists(path):
-              print(f'::set-output name=check_rep_error::Файл отсутсвует по пути: '+ path )
+              print(f'::set-output name=check_rep_error::Файл не найден по шаблону <Номер группы>_<ФИО>_lab<номер лабораторной> не найден ' )
               return ''
             print(f'::set-output name=check_rep_error::')
             return path
@@ -51,8 +51,6 @@ jobs:
           print("FILE_PATH = " + path, end='')
           END
           echo ${{ env.FILE_PATH }}
-      - name: Содержимое файла
-        run: cat $(cat FILE_PATH.txt)
       - name: CheckRep
         id: changePoints
         run: |
@@ -131,3 +129,5 @@ jobs:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           event: ${{ steps.changePoints.outputs.check_report == 1 && 'APPROVE' || 'REQUEST_CHANGES' }}
           body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.check_path.outputs.check_rep_error !='' && steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{ steps.changePoints.outputs.check_rep_error || steps.check_path.outputs.check_rep_error }}"
+        
+        
