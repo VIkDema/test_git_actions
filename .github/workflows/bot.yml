@@ -34,23 +34,25 @@ jobs:
           python3 << END
           import os.path
           
-          def get_and_check_path_file(pr_name):
-            items = pr_name.split('_')
-            path = '/'.join(items)+'.ipynb'
-            if len(items) != 3 or not items[0].isdigit():
-              print(f'::set-output name=check_file::0')
-              print(f'::set-output name=check_file_error::Название PR не соотвествует шаблону <Номер группы>_<ФИО>_lab<номер лабораторной>! ')
-              return ''
-            if not os.path.exists(path):
-              print(f'::set-output name=check_file::0')
-              print(f'::set-output name=check_file_error::Файл не найден по шаблону <Номер группы>_<ФИО>_lab<номер лабораторной> не найден ' )
-              return ''
-            print(f'::set-output name=check_file::1')
-            return path
-
           pr_name =  '${{github.event.pull_request.title}}'
-          path = get_and_check_path_file(pr_name)
-          #print("FILE_PATH =" + path, end='')
+
+          items = pr_name.split('_')
+          path = '/'.join(items)+'.ipynb'
+   
+          if len(items) != 3 or not items[0].isdigit():
+            print(f'::set-output name=check_file::0')
+            print(f'::set-output name=check_file_error::Название PR не соотвествует шаблону <Номер группы>_<ФИО>_lab<номер лабораторной>! ')
+            path=''
+
+          if path and not os.path.exists(path):
+            print(f'::set-output name=check_file_error::Файл не найден по шаблону <Номер группы>_<ФИО>_lab<номер лабораторной> не найден ' )
+            path=''
+
+          if path:
+            print(f'::set-output name=check_file::1')
+            print(f'::set-output name=path::'+path)
+          eles:
+            print(f'::set-output name=check_file::0')
           END
       - name: CheckRep
         id: changePoints
