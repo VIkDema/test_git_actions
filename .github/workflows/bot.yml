@@ -43,7 +43,7 @@ jobs:
             if not os.path.exists(path):
               print(f'::set-output name=check_rep_error::Файл не найден по шаблону <Номер группы>_<ФИО>_lab<номер лабораторной> не найден ' )
               return ''
-            print(f'::set-output name=check_rep_error::')
+            print(f'::set-output name=check_rep_error::test')
             return path
 
           pr_name =  '${{github.event.pull_request.title}}'
@@ -128,6 +128,6 @@ jobs:
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           event: ${{ steps.changePoints.outputs.check_report == 1 && 'APPROVE' || 'REQUEST_CHANGES' }}
-          body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.check_path.outputs.check_rep_error !='' && steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{ steps.changePoints.outputs.check_rep_error || steps.check_path.outputs.check_rep_error }}"
+          body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.check_path.outputs.check_rep_error !='' && steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{steps.check_path.outputs.check_rep_error }}"
         
         
