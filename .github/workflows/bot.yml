@@ -29,14 +29,29 @@ jobs:
       - name: Имя PR
         run: echo ${{github.event.pull_request.title}}
       - name: Путь до файла
+        id: changePoints
         run: |
-          python3 << END > FILE_PATH.txt
-          import os
-          pr_name = '${{github.event.pull_request.title}}'
-          index = pr_name.rfind('_')
-          print(pr_name[:index]+'/'+pr_name[index+1:]+'.ipynb',end='')
+          python3 << END >> $GITHUB_ENV
+          import os.path
+          
+          def get_and_check_path_file(pr_name):
+            items = pr_name.split('_')
+            path = '/'.join(items)+'.ipynb'
+            if len(items) != 3 or not items[0].isdigit():
+              print(f'::set-output name=check_report::0')
+              print(f'::set-output name=check_rep_error::Название PR не соотвествует шаблону <Номер группы>_<ФИО>_lab<номер лабораторной>! ')
+              return ''
+            if not os.path.exists(path):
+              print(f'::set-output name=check_report::0')
+              print(f'::set-output name=check_rep_error::Файл отсутсвует по пути: '+ path )
+              return ''
+            return path
+
+          pr_name =  '${{github.event.pull_request.title}}'
+          path = get_and_check_path_file(pr_name)
+          print("FILE_PATH = " + path, end='')
           END
-          cat FILE_PATH.txt
+          echo ${{ env.FILE_PATH }}
       - name: Содержимое файла
         run: cat $(cat FILE_PATH.txt)
       - name: CheckRep
@@ -87,7 +102,7 @@ jobs:
                       print(f'::set-output name=check_rep_error::Выполнение работы')
                   if j==4:
                       print(f'::set-output name=check_rep_error::Выводы')
-            
+            '''
             try:
               f = open('FILE_PATH.txt', encoding='utf-8')
             except FileNotFoundError:
@@ -96,16 +111,20 @@ jobs:
             path = f.read()
             
             f.close
+            '''
+            path = ${{ env.FILE_PATH }}
             
-            try:
-              notebook = open(path, encoding='utf-8')
-            except FileNotFoundError:
-              print("No file")
-            
-            data = json.load(notebook)
-            notebook.close()
-            markdown, code, language = jsonParce(data)
-            changePoints(markdown)
+            print(path)
+
+            if path:
+              try:
+                notebook = open(path, encoding='utf-8')
+              except FileNotFoundError:
+                print("No file")
+              data = json.load(notebook)
+              notebook.close()
+              markdown, code, language = jsonParce(data)
+              changePoints(markdown)
             END
       - name: Approve/Request changes pull request
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
@@ -113,3 +132,4 @@ jobs:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           event: ${{ steps.changePoints.outputs.check_report == 1 && 'APPROVE' || 'REQUEST_CHANGES' }}
           body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{ steps.changePoints.outputs.check_rep_error }}"
+
