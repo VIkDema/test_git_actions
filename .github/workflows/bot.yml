@@ -86,7 +86,7 @@ jobs:
                         break
                       substr = "# " + substrings[j]
 
-              print(f'::set-output name=check_report::'+str(is_all_found))
+              print(f'::set-output name=check_report::{str(is_all_found)}')
               if is_all_found:
                   print(f'::set-output name=check_rep_error::Кажется, всё хорошо.')
               else:
