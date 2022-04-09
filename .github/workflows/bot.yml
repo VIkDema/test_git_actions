@@ -78,8 +78,8 @@ jobs:
               substr = substrings[j]
               is_all_found = 0
             
-              for str in markdown:
-                  if substr in str:
+              for line in markdown:
+                  if substr in line:
                       j+=1
                       if j == len(substrings):
                         is_all_found = 1
@@ -90,7 +90,7 @@ jobs:
               if is_all_found:
                   print(f'::set-output name=check_rep_error::Кажется, всё хорошо.')
               else:
-                  print(f'::set-output name=check_rep_error::Не найдено: ' + substrings[j])
+                  print(f'::set-output name=check_rep_error::Не найдено: {substrings[j]}')
 
             def start_analyzing(path):
               try:
