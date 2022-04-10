@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ master, main ]
     types: [opened, synchronize, reopened, edited]
-    
+
 jobs:
   get-date-and-time:
     runs-on: ubuntu-latest
@@ -33,25 +33,61 @@ jobs:
         run: |
           python3 << END
           import os.path
+          import re
           
           pr_name =  '${{github.event.pull_request.title}}'
           items = pr_name.split('_')
-          path = '/'.join(items)+'.ipynb'
+          lab_num = items[-1]
+          path = '/'.join(items)+'.ipynb' 
    
-          if len(items) != 3 or not items[0].isdigit():
+          if not re.match(r'^\d{4}_[a-zA-Z]+_lab\d{1,2}$', pr_name):
             print(f'::set-output name=check_file::0')
             print(f'::set-output name=check_file_error::Название PR не соотвествует шаблону <Номер группы>_<ФИО>_lab<номер лабораторной>! ')
             path=''
+            lab_num=''
 
           if path and not os.path.exists(path):
             print(f'::set-output name=check_file_error::Файл не найден по шаблону <Номер группы>/<ФИО>/lab<номер лабораторной>.ipynb' )
             path=''
+            lab_num=''
 
           if path:
             print(f'::set-output name=check_file::1')
             print(f'::set-output name=path::'+path)
+            print(f'::set-output name=labnum::'+lab_num)
           else:
             print(f'::set-output name=check_file::0')
+          END
+      - name: CheckDeadline
+        id: checkdeadline
+        run: |
+          python3 << END
+          import time
+          
+          if '{steps.check_path.outputs.check_file}' == '1':
+            labnum = '{steps.check_path.outputs.labnum}'
+                try:
+                  f = open("deadline.json", encoding='utf-8')
+                  deadlines = json.load(f)
+                  f.close()
+                  try:
+                    dl = deadlines[labnum]
+                    data = '${{github.event.pull_request.created_at}}'
+                    date = time.strptime(data, '%Y-%m-%dT%H:%M:%SZ')
+                    creation_date = time.strftime('%Y-%m-%d', date)
+                    creation_time = time.strftime('%H:%M:%S', date)
+                    if creation_date < dl and int(creation_time.split(':')[0]) < 24:
+                      print(f'::set-output name=check_deadline::1')
+                    else:
+                      print(f'::set-output name=check_deadline::0')
+                      print(f'::set-output name=check_deadline_error:: Вы опоздали.\nРабота загружена: {0} {1}\n Дедлайн: {2}'.format(creation_date, creation_time, dl))
+                  except KeyError:
+                    print(f'::set-output name=check_deadline::0')
+                    print(f'::set-output name=check_deadline_error::отсутствует дедлайн для данной лабораторной работы ')
+                except FileNotFoundError:
+                  print("No such file or directory: '{}'".format(filename))
+                  print(f'::set-output name=check_deadline::0')
+                  print(f'::set-output name=check_deadline_error::Неудалось найти файл с дедлайнами ')
           END
       - name: CheckRep
         id: changePoints
@@ -85,13 +121,11 @@ jobs:
                         is_all_found = 1
                         break
                       substr = "# " + substrings[j]
-
               print(f'::set-output name=check_report::{str(is_all_found)}')
               if is_all_found:
                   print(f'::set-output name=check_rep_error::Кажется, всё хорошо.')
               else:
                   print(f'::set-output name=check_rep_error::Не найдено: {substrings[j]}')
-
             def start_analyzing(path):
               try:
                 notebook = open(path, encoding='utf-8')
@@ -101,7 +135,6 @@ jobs:
               notebook.close()
               markdown, code, language = jsonParce(data)
               changePoints(markdown)
-
             path = '${{steps.check_path.outputs.path}}'
             if path:
               start_analyzing(path)
@@ -110,5 +143,5 @@ jobs:
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
-          event: ${{ steps.changePoints.outputs.check_report == 1 && steps.check_path.outputs.check_file == 1 && 'APPROVE' || 'REQUEST_CHANGES' }}
-          body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{ steps.check_path.outputs.check_file == 1 && steps.changePoints.outputs.check_rep_error || steps.check_path.outputs.check_file_error }}"
+          event: ${{ steps.changePoints.outputs.check_report == 1 && steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && 'APPROVE' || 'REQUEST_CHANGES' }}
+          body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{ steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && steps.changePoints.outputs.check_rep_error || steps.check_path.outputs.check_file_error || steps.checkdeadline.outputs.check_deadline_error}}"
