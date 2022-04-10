@@ -83,7 +83,7 @@ jobs:
                   print(f'::set-output name=check_deadline::1')
                 else:
                   print(f'::set-output name=check_deadline::0')
-                  print(f'::set-output name=check_deadline_error:: Вы опоздали.'+'\n' + ' Работа загружена: '+ creation_date + creation_time +'\n'+'Дедлайн: '+dl)
+                  print(f'::set-output name=check_deadline_error:: Вы опоздали.'+'\\n' + ' Работа загружена: '+ creation_date + creation_time +'\\n'+'Дедлайн: '+dl)
               except KeyError:
                 print(f'::set-output name=check_deadline::0')
                 print(f'::set-output name=check_deadline_error::отсутствует дедлайн для данной лабораторной работы ')
