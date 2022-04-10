@@ -63,6 +63,7 @@ jobs:
         run: |
           python3 << END
           import time
+          import json
           
           if '${{steps.check_path.outputs.check_file}}' == '1':
             print("test1")
