@@ -81,10 +81,7 @@ jobs:
                   print(f'::set-output name=check_deadline::1')
                 else:
                   print(f'::set-output name=check_deadline::0')
-                  print(f'::set-output name=check_deadline_error::'+ "Вы опоздали.")
-                  print(f'::set-output name=check_deadline_error::'+ "   Работа загружена: {0} {1}".format(creation_date, creation_time))
-                  print(f'::set-output name=check_deadline_error::')
-                  print(f'::set-output name=check_deadline_error::' + "   Дедлайн: {}".format(dl))
+                  print(f'::set-output name=check_deadline_error::'+ "Вы опоздали. Работа загружена: {0} {1}  Дедлайн: {2}".format(creation_date, creation_time, dl))
                   print("Вы опоздали. \\n Работа загружена: {0} {1} \\n Дедлайн: {2}".format(creation_date, creation_time, dl))
               except KeyError:
                 print(f'::set-output name=check_deadline::0')
@@ -142,9 +139,12 @@ jobs:
               notebook.close()
               markdown, code, language = jsonParce(data)
               changePoints(markdown)
+              
             path = '${{steps.check_path.outputs.path}}'
-            if path:
+            if path and '${{steps.checkdeadline.outputs.check_deadline}}' == '1':
               start_analyzing(path)
+            else:
+              print(f'::set-output name=check_report::0')
             END
       - name: Approve/Request changes pull request
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
