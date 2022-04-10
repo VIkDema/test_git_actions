@@ -66,7 +66,6 @@ jobs:
           import json
           
           if '${{steps.check_path.outputs.check_file}}' == '1':
-            print("test1")
             labnum = '${{steps.check_path.outputs.labnum}}'
             try:
               f = open("deadline.json", encoding='utf-8')
@@ -79,11 +78,11 @@ jobs:
                 creation_date = time.strftime('%Y-%m-%d', date)
                 creation_time = time.strftime('%H:%M:%S', date)
                 if creation_date < dl and int(creation_time.split(':')[0]) < 24:
-                  print(creation_date, dl)
                   print(f'::set-output name=check_deadline::1')
                 else:
                   print(f'::set-output name=check_deadline::0')
-                  print(f'::set-output name=check_deadline_error::'+ "Вы опоздали. \\n Работа загружена: {0} {1} \\n Дедлайн: {2}".format(creation_date, creation_time, dl))
+                  print(f'::set-output name=check_deadline_error::'+ "Вы опоздали. Работа загружена: {0} {1}  Дедлайн: {2}".format(creation_date, creation_time, dl))
+                  print("Вы опоздали. \\n Работа загружена: {0} {1} \\n Дедлайн: {2}".format(creation_date, creation_time, dl))
               except KeyError:
                 print(f'::set-output name=check_deadline::0')
                 print(f'::set-output name=check_deadline_error::отсутствует дедлайн для данной лабораторной работы ')
@@ -93,7 +92,6 @@ jobs:
               print(f'::set-output name=check_deadline_error::Неудалось найти файл с дедлайнами ')
           else:
             print(f'::set-output name=check_deadline::0')
-            print("test3")
           END
       - name: CheckRep
         id: changePoints
