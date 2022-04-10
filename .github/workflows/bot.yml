@@ -81,10 +81,10 @@ jobs:
                   print(f'::set-output name=check_deadline::1')
                 else:
                   print(f'::set-output name=check_deadline::0')
-                  print(f'::set-output name=check_deadline_error::'+ "Вы опоздали. \\n")
-                  print(f'::set-output name=check_deadline_error::'+ "Работа загружена: {0} {1}".format(creation_date, creation_time))
-                  print(f'::set-output name=check_deadline_error:: \\n')
-                  print(f'::set-output name=check_deadline_error::' + "Дедлайн: {}".format(dl))
+                  print(f'::set-output name=check_deadline_error::'+ "Вы опоздали.")
+                  print(f'::set-output name=check_deadline_error::'+ "   Работа загружена: {0} {1}".format(creation_date, creation_time))
+                  print(f'::set-output name=check_deadline_error::')
+                  print(f'::set-output name=check_deadline_error::' + "   Дедлайн: {}".format(dl))
                   print("Вы опоздали. \\n Работа загружена: {0} {1} \\n Дедлайн: {2}".format(creation_date, creation_time, dl))
               except KeyError:
                 print(f'::set-output name=check_deadline::0')
