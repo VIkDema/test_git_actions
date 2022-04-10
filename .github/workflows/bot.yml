@@ -88,6 +88,8 @@ jobs:
               print("No such file or directory: '{}'".format(filename))
               print(f'::set-output name=check_deadline::0')
               print(f'::set-output name=check_deadline_error::Неудалось найти файл с дедлайнами ')
+          else:
+            print(f'::set-output name=check_deadline::0')
           END
       - name: CheckRep
         id: changePoints
