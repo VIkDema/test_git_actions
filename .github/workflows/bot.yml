@@ -63,8 +63,8 @@ jobs:
         run: |
           python3 << END
           import time
-          
-          if '{steps.check_path.outputs.check_file}' == '1':
+          print({steps.check_path.outputs.check_file})
+          if '${steps.check_path.outputs.check_file}' == '1':
             print("test1")
             labnum = '{steps.check_path.outputs.labnum}'
             try:
