@@ -26,6 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+      - name: Установка библиотек
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytz
       - name: Имя PR
         run: echo ${{github.event.pull_request.title}}
       - name: Путь до файла
@@ -62,7 +69,8 @@ jobs:
         id: checkdeadline
         run: |
           python3 << END
-          import time
+          from datetime import datetime
+          import pytz
           import json
           
           if '${{steps.check_path.outputs.check_file}}' == '1':
@@ -73,11 +81,12 @@ jobs:
               f.close()
               try:
                 dl = deadlines[labnum]
-                data = '${{github.event.pull_request.created_at}}'
-                date = time.strptime(data, '%Y-%m-%dT%H:%M:%SZ')
-                creation_date = time.strftime('%Y-%m-%d', date)
-                creation_time = time.strftime('%H:%M:%S', date)
-                if creation_date < dl and int(creation_time.split(':')[0]) < 24:
+                date_time_str = '${{github.event.pull_request.created_at}}'
+                timezone = pytz.timezone("Europe/Moscow")
+                date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%SZ").astimezone(timezone)
+                creation_date = str(date_time_obj.date())
+                creation_time = str(date_time_obj.time())
+                if creation_date < dl:
                   print(f'::set-output name=check_deadline::1')
                 else:
                   print(f'::set-output name=check_deadline::0')
