@@ -126,10 +126,10 @@ jobs:
           
               for key in dict_substrings:
                   if not dict_substrings[key]:
-                      print(f'::set-output name=check_rep_error::'+ "{} not found".format(key))
+                      print(f"::set-output name=check_rep_error::"+ "{} not found".format(key))
                       print(key + ' not found\n')
                   else:
-                      print(f'::set-output name=check_rep_error::' + "{} ok".format(key))
+                      print(f"::set-output name=check_rep_error::" + "{} ok".format(key))
                       print(key + ' ok\n')
           
               if all(value for value in dict_substrings.values()):
@@ -149,6 +149,7 @@ jobs:
               notebook.close()
               markdown, code, language = jsonParce(data)
               print(f'::set-output name=check_rep_error::Ядро: ' + str(language))
+              print("Ядро: " + language)
               changePoints(markdown)
               
             path = '${{steps.check_path.outputs.path}}'
@@ -172,7 +173,7 @@ jobs:
           event: 'COMMENT'
           body: "${{steps.check_path.outputs.check_file_error}} \\n"
 
-      - name: bot commentsnew
+      - name: bot comments1
         if: ${{steps.check_path.outputs.check_file == 1}}
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
