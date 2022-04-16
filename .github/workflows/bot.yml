@@ -75,12 +75,12 @@ jobs:
                 if creation_date <= dl:
                   print(f'::set-output name=check_deadline::1')
                   #print(f'::set-output name=check_deadline_error::Работа загружена: {creation_date} {creation_time}{nl}Дедлайн: {dl}')
-                  messageString += f'Работа загружена: {creation_date} {creation_time}\nДедлайн: {dl}\n'
+                  messageString += f'Работа загружена: {creation_date} {creation_time}Дедлайн: {dl}'
                   print(f'::set-output name=check_deadline_error::{messageString}')
                 else:
                   print(f'::set-output name=check_deadline::0')
                   #print(f'::set-output name=check_deadline_error::Вы опоздали. Работа загружена: {creation_date} {creation_time}{nl}Дедлайн: {dl}')
-                  messageString += f'Вы опоздали. Работа загружена: {creation_date} {creation_time}\nДедлайн: {dl}\n'
+                  messageString += f'Вы опоздали. Работа загружена: {creation_date} {creation_time}Дедлайн: {dl}'
                   print(f'::set-output name=check_deadline_error::{messageString}')
               except KeyError:
                 print(f'::set-output name=check_deadline::0')
@@ -137,11 +137,11 @@ jobs:
                 for key in dict_substrings:
                     if not dict_substrings[key]:
                         # print(f'::set-output name=check_rep_error::{key} not found')
-                        messageString += f'{key} not found\n'
+                        messageString += f'{key} not found'
                         print(key + ' not found\n')
                     else:
                         # print(f'::set-output name=check_rep_error::{key} ok')
-                        messageString += f'{key} ok\n'
+                        messageString += f'{key} ok'
                         print(key + ' ok\n')
         
                 if all(value for value in dict_substrings.values()):
@@ -165,7 +165,7 @@ jobs:
                 notebook.close()
                 markdown, code, language = jsonParce(data)
                 # print(f'::set-output name=check_rep_error::Ядро: {language}')
-                messageString += f'Ядро: {language}\n'
+                messageString += f'Ядро: {language}'
                 print("Ядро: " + language)
                 changePoints(markdown, messageString)
         
