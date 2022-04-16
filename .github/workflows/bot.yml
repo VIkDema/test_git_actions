@@ -59,6 +59,7 @@ jobs:
           
           if '${{steps.check_path.outputs.check_file}}' == '1':
             labnum = '${{steps.check_path.outputs.labnum}}'
+            nl = '\n'
             try:
               f = open("deadline.json", encoding='utf-8')
               deadlines = json.load(f)
@@ -72,10 +73,10 @@ jobs:
                 creation_time = str(date_time_obj.time())
                 if creation_date <= dl:
                   print(f'::set-output name=check_deadline::1')
-                  print(f'::set-output name=check_deadline_error::'+ "Работа загружена: {0} {1}  Дедлайн: {2}".format(creation_date, creation_time, dl))
+                  print(f'::set-output name=check_deadline_error::Работа загружена: {creation_date} {creation_time}{nl}Дедлайн: {dl}')
                 else:
                   print(f'::set-output name=check_deadline::0')
-                  print(f'::set-output name=check_deadline_error::'+ "Вы опоздали. Работа загружена: {0} {1}  Дедлайн: {2}".format(creation_date, creation_time, dl))
+                  print(f'::set-output name=check_deadline_error::Вы опоздали. Работа загружена: {creation_date} {creation_time}{nl}Дедлайн: {dl}')
               except KeyError:
                 print(f'::set-output name=check_deadline::0')
                 print(f'::set-output name=check_deadline_error::отсутствует дедлайн для данной лабораторной работы ')
@@ -126,10 +127,10 @@ jobs:
           
               for key in dict_substrings:
                   if not dict_substrings[key]:
-                      print(f"::set-output name=check_rep_error::"+ "{} not found".format(key))
+                      print(f'::set-output name=check_rep_error::{key} not found')
                       print(key + ' not found\n')
                   else:
-                      print(f"::set-output name=check_rep_error::" + "{} ok".format(key))
+                      print(f'::set-output name=check_rep_error::{key} ok')
                       print(key + ' ok\n')
           
               if all(value for value in dict_substrings.values()):
@@ -148,7 +149,7 @@ jobs:
               data = json.load(notebook)
               notebook.close()
               markdown, code, language = jsonParce(data)
-              print(f'::set-output name=check_rep_error::Ядро: ' + str(language))
+              print(f'::set-output name=check_rep_error::Ядро: {language}')
               print("Ядро: " + language)
               changePoints(markdown)
               
