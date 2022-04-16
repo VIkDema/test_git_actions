@@ -171,8 +171,8 @@ jobs:
           body: "${{steps.check_path.outputs.check_file_error}} \\n"
 
       - name: bot commentsnew
-          uses: andrewmusgrave/automatic-pull-request-review@0.0.2
-          with:
-            repo-token: '${{ secrets.GITHUB_TOKEN }}'
-            event: 'COMMENT'
-            body: "${{steps.checkdeadline.outputs.check_deadline_error}} \\n ${{steps.changePoints.outputs.check_rep_error}} "
+        uses: andrewmusgrave/automatic-pull-request-review@0.0.2
+        with:
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+          event: 'COMMENT'
+          body: "${{steps.checkdeadline.outputs.check_deadline_error}} \\n ${{steps.changePoints.outputs.check_rep_error}} "
