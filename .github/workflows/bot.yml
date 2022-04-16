@@ -6,22 +6,6 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
-  get-date-and-time:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get PR date and time creation
-        run: |
-          python3 <<END
-          import time
-          
-          data = '${{github.event.pull_request.created_at}}'
-          date = time.strptime(data, '%Y-%m-%dT%H:%M:%SZ')
-          creation_date = time.strftime('%Y-%m-%d', date)
-          creation_time = time.strftime('%H:%M:%S', date)
-          print(f'Дата создания: {creation_date}')
-          print(f'Время создания: {creation_time}')
-          
-          END
   check_ipynb:
     runs-on: ubuntu-latest
     steps:
@@ -88,10 +72,10 @@ jobs:
                 creation_time = str(date_time_obj.time())
                 if creation_date <= dl:
                   print(f'::set-output name=check_deadline::1')
+                  print(f'::set-output name=check_deadline_error::'+ "Работа загружена: {0} {1}  Дедлайн: {2}".format(creation_date, creation_time, dl))
                 else:
                   print(f'::set-output name=check_deadline::0')
                   print(f'::set-output name=check_deadline_error::'+ "Вы опоздали. Работа загружена: {0} {1}  Дедлайн: {2}".format(creation_date, creation_time, dl))
-                  print("Вы опоздали. \\n Работа загружена: {0} {1} \\n Дедлайн: {2}".format(creation_date, creation_time, dl))
               except KeyError:
                 print(f'::set-output name=check_deadline::0')
                 print(f'::set-output name=check_deadline_error::отсутствует дедлайн для данной лабораторной работы ')
@@ -120,25 +104,40 @@ jobs:
                   for c in cell.get("source"):
                     code.append(c)
               return markdown, code, data.get("metadata").get("kernelspec").get("language")
-            
-            def changePoints(markdown):
-              substrings=["Цель работы", "Основные теоретические положения", "Постановка задачи", "Выполнение работы", "Выводы"]
-              j=0
-              substr = substrings[j]
-              is_all_found = 0
-            
-              for line in markdown:
-                  if substr in line:
-                      j+=1
-                      if j == len(substrings):
-                        is_all_found = 1
-                        break
-                      substr = "# " + substrings[j]
-              print(f'::set-output name=check_report::{str(is_all_found)}')
-              if is_all_found:
+          
+            def changePoints(markdown: list) -> None:
+              """
+                  Function checks availability of all necessary headers.
+          
+                  Args:
+                      markown (list): List of strings from cells in Jupyter Notebook.
+          
+                  Returns:
+                      None
+              """
+              substrings: list = ["# Цель работы", "# Основные теоретические положения", "# Постановка задачи", "# Выполнение работы",
+                            "# Выводы"]
+              dict_substrings: dict = dict.fromkeys(substrings, False)
+          
+              for key in dict_substrings:
+                  for str in markdown:
+                      if key in str:
+                          dict_substrings[key] = True
+          
+              for key in dict_substrings:
+                  if not dict_substrings[key]:
+                      print(f'::set-output name=check_rep_error::' + key + ' not found\n')
+                  else:
+                      print(f'::set-output name=check_rep_error::' + key + ' ok\n')
+          
+              if all(value for value in dict_substrings.values()):
                   print(f'::set-output name=check_rep_error::Кажется, всё хорошо.')
+                  print(f'::set-output name=check_report::1')
               else:
-                  print(f'::set-output name=check_rep_error::Не найдено: {substrings[j]}')
+                  print(f'::set-output name=check_rep_error::Попробуй снова!')
+                  print(f'::set-output name=check_report::0')
+
+          
             def start_analyzing(path):
               try:
                 notebook = open(path, encoding='utf-8')
@@ -147,17 +146,33 @@ jobs:
               data = json.load(notebook)
               notebook.close()
               markdown, code, language = jsonParce(data)
+              print(f'::set-output name=check_rep_error::Ядро: ' + language)
               changePoints(markdown)
               
             path = '${{steps.check_path.outputs.path}}'
-            if path and '${{steps.checkdeadline.outputs.check_deadline}}' == '1':
+            if path:
               start_analyzing(path)
             else:
               print(f'::set-output name=check_report::0')
             END
-      - name: Approve/Request changes pull request
+      - name: Start comment
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
-          event: ${{ steps.changePoints.outputs.check_report == 1 && steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && 'APPROVE' || 'REQUEST_CHANGES' }}
-          body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.changePoints.outputs.check_report == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: ${{ steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && steps.changePoints.outputs.check_rep_error || steps.check_path.outputs.check_file_error || steps.checkdeadline.outputs.check_deadline_error}}"
+          event: ${{ steps.changePoints.outputs.check_report == 1 && steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && 'APPROVE' || 'DISMISS'}}
+          body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.changePoints.outputs.check_report == 1 && steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: "
+
+      - name: bot comments
+        if: ${{steps.check_path.outputs.check_file == 0}}
+        uses: andrewmusgrave/automatic-pull-request-review@0.0.2
+        with:
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+          event: 'COMMENT'
+          body: "${{steps.check_path.outputs.check_file_error}} \\n"
+
+      - name: bot commentsnew
+          uses: andrewmusgrave/automatic-pull-request-review@0.0.2
+          with:
+            repo-token: '${{ secrets.GITHUB_TOKEN }}'
+            event: 'COMMENT'
+            body: "${{steps.checkdeadline.outputs.check_deadline_error}} \\n ${{steps.changePoints.outputs.check_rep_error}} "
