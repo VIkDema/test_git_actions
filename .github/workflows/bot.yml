@@ -127,8 +127,10 @@ jobs:
               for key in dict_substrings:
                   if not dict_substrings[key]:
                       print(f'::set-output name=check_rep_error::'+ "{} not found".format(key))
+                      print(key + ' not found\n')
                   else:
                       print(f'::set-output name=check_rep_error::' + "{} ok".format(key))
+                      print(key + ' ok\n')
           
               if all(value for value in dict_substrings.values()):
                   print(f'::set-output name=check_rep_error::Кажется, всё хорошо.')
