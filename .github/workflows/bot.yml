@@ -173,6 +173,7 @@ jobs:
           body: "${{steps.check_path.outputs.check_file_error}} \\n"
 
       - name: bot commentsnew
+        if: ${{steps.check_path.outputs.check_file == 1}}
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
