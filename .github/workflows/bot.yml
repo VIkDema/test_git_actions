@@ -159,7 +159,7 @@ jobs:
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
-          event: ${{ steps.changePoints.outputs.check_report == 1 && steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && 'APPROVE' || 'DISMISS'}}
+          event: ${{ steps.changePoints.outputs.check_report == 1 && steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && 'APPROVE' || 'REQUEST_CHANGES'}}
           body: "## Автоматическая проверка. \\n **Результат**: ${{ steps.changePoints.outputs.check_report == 1 && steps.check_path.outputs.check_file == 1 && steps.checkdeadline.outputs.check_deadline == 1 && 'Проверка пройдена!' || 'Проверка не пройдена.' }} \\n *Детали*: "
 
       - name: bot comments
