@@ -100,80 +100,82 @@ jobs:
             python3 <<END
             import json
             
-            messageString = f''
-            
             def jsonParce(data):
-              markdown = []
-              code = []
-              cells = data.get("cells")
-              for cell in cells:
-                if cell.get("cell_type") == "markdown":
-                  for md in cell.get("source"):
-                    markdown.append(md)
-                elif cell.get("cell_type") == "code":
-                  for c in cell.get("source"):
-                    code.append(c)
-              return markdown, code, data.get("metadata").get("kernelspec").get("language")
-          
-            def changePoints(markdown: list) -> None:
-              """
-                  Function checks availability of all necessary headers.
-          
-                  Args:
-                      markown (list): List of strings from cells in Jupyter Notebook.
-          
-                  Returns:
-                      None
-              """
-              substrings: list = ["# Цель работы", "# Основные теоретические положения", "# Постановка задачи", "# Выполнение работы",
-                            "# Выводы"]
-              dict_substrings: dict = dict.fromkeys(substrings, False)
-          
-              for key in dict_substrings:
-                  for str in markdown:
-                      if key in str:
-                          dict_substrings[key] = True
-          
-              for key in dict_substrings:
-                  if not dict_substrings[key]:
-                      #print(f'::set-output name=check_rep_error::{key} not found')
-                      messageString += f'{key} not found\n'  
-                      print(key + ' not found\n')
-                  else:
-                      #print(f'::set-output name=check_rep_error::{key} ok')
-                      messageString += f'{key} ok\n'
-                      print(key + ' ok\n')
-          
-              if all(value for value in dict_substrings.values()):
-                  #print(f'::set-output name=check_rep_error::Кажется, всё хорошо.')   
-                  messageString += f'Кажется, всё хорошо.'
-                  print(f'::set-output name=check_rep_error::{messageString}')
-                  print(f'::set-output name=check_report::1')
-              else:
-                  #print(f'::set-output name=check_rep_error::Попробуй снова!')
-                  messageString += f'Попробуй снова!'
-                  print(f'::set-output name=check_rep_error::{messageString}')
-                  print(f'::set-output name=check_report::0')
-
-          
-            def start_analyzing(path):
-              try:
-                notebook = open(path, encoding='utf-8')
-              except FileNotFoundError:
-                print("No file")
-              data = json.load(notebook)
-              notebook.close()
-              markdown, code, language = jsonParce(data)
-              #print(f'::set-output name=check_rep_error::Ядро: {language}')
-              messageString += f'Ядро: {language}\n'
-              print("Ядро: " + language)
-              changePoints(markdown)
-              
+                markdown = []
+                code = []
+                cells = data.get("cells")
+                for cell in cells:
+                    if cell.get("cell_type") == "markdown":
+                        for md in cell.get("source"):
+                            markdown.append(md)
+                    elif cell.get("cell_type") == "code":
+                        for c in cell.get("source"):
+                            code.append(c)
+                return markdown, code, data.get("metadata").get("kernelspec").get("language")
+        
+        
+            def changePoints(markdown: list, messageString: str) -> None:
+                """
+                    Function checks availability of all necessary headers.
+        
+                    Args:
+                        markown (list): List of strings from cells in Jupyter Notebook.
+        
+                    Returns:
+                        None
+                """
+                substrings: list = ["# Цель работы", "# Основные теоретические положения", "# Постановка задачи",
+                                    "# Выполнение работы",
+                                    "# Выводы"]
+                dict_substrings: dict = dict.fromkeys(substrings, False)
+        
+                for key in dict_substrings:
+                    for str in markdown:
+                        if key in str:
+                            dict_substrings[key] = True
+        
+                for key in dict_substrings:
+                    if not dict_substrings[key]:
+                        # print(f'::set-output name=check_rep_error::{key} not found')
+                        messageString += f'{key} not found\n'
+                        print(key + ' not found\n')
+                    else:
+                        # print(f'::set-output name=check_rep_error::{key} ok')
+                        messageString += f'{key} ok\n'
+                        print(key + ' ok\n')
+        
+                if all(value for value in dict_substrings.values()):
+                    # print(f'::set-output name=check_rep_error::Кажется, всё хорошо.')   
+                    messageString += f'Кажется, всё хорошо.'
+                    print(f'::set-output name=check_rep_error::{messageString}')
+                    print(f'::set-output name=check_report::1')
+                else:
+                    # print(f'::set-output name=check_rep_error::Попробуй снова!')
+                    messageString += f'Попробуй снова!'
+                    print(f'::set-output name=check_rep_error::{messageString}')
+                    print(f'::set-output name=check_report::0')
+        
+        
+            def start_analyzing(path, messageString):
+                try:
+                    notebook = open(path, encoding='utf-8')
+                except FileNotFoundError:
+                    print("No file")
+                data = json.load(notebook)
+                notebook.close()
+                markdown, code, language = jsonParce(data)
+                # print(f'::set-output name=check_rep_error::Ядро: {language}')
+                messageString += f'Ядро: {language}\n'
+                print("Ядро: " + language)
+                changePoints(markdown, messageString)
+        
+        
+            messageString = f''
             path = '${{steps.check_path.outputs.path}}'
             if path:
-              start_analyzing(path)
+                start_analyzing(path, messageString)
             else:
-              print(f'::set-output name=check_report::0')
+                print(f'::set-output name=check_report::0')
             END
       - name: Start comment
         uses: andrewmusgrave/automatic-pull-request-review@0.0.2
