@@ -148,7 +148,7 @@ jobs:
               data = json.load(notebook)
               notebook.close()
               markdown, code, language = jsonParce(data)
-              print(f'::set-output name=check_rep_error::Ядро: ' + language)
+              print(f'::set-output name=check_rep_error::Ядро: ' + str(language))
               changePoints(markdown)
               
             path = '${{steps.check_path.outputs.path}}'
