@@ -74,13 +74,13 @@ jobs:
                 creation_time = str(date_time_obj.time())
                 if creation_date <= dl:
                   print(f'::set-output name=check_deadline::1')
-                  #print(f'::set-output name=check_deadline_error::Работа загружена: {creation_date} {creation_time}{nl}Дедлайн: {dl}')
-                  messageString += "Работа загружена: " + creation_date + creation_time + "\\n"+"Дедлайн: " + dl + "\n"
+                  #print(f'::set-output name=check_deadline_error::Работа загружена: {creation_date} {creation_time}Дедлайн: {dl}')
+                  messageString += "Работа загружена: " + creation_date + creation_time + "%0A"+"Дедлайн: " + dl + "%0A"
                   print('::set-output name=check_deadline_error::' + messageString)
                 else:
                   print(f'::set-output name=check_deadline::0')
                   #print(f'::set-output name=check_deadline_error::Вы опоздали. Работа загружена: {creation_date} {creation_time}{nl}Дедлайн: {dl}')
-                  messageString += f'Вы опоздали. Работа загружена: {creation_date} {creation_time}Дедлайн: {dl}'
+                  messageString += f'Вы опоздали. Работа загружена: {creation_date} {creation_time}%0AДедлайн: {dl}'
                   print(f'::set-output name=check_deadline_error::{messageString}')
               except KeyError:
                 print(f'::set-output name=check_deadline::0')
@@ -137,11 +137,11 @@ jobs:
                 for key in dict_substrings:
                     if not dict_substrings[key]:
                         # print(f'::set-output name=check_rep_error::{key} not found')
-                        messageString += f'{key} not found'
+                        messageString += f'{key} not found%0A'
                         print(key + ' not found\n')
                     else:
                         # print(f'::set-output name=check_rep_error::{key} ok')
-                        messageString += f'{key} ok'
+                        messageString += f'{key} ok%0A'
                         print(key + ' ok\n')
         
                 if all(value for value in dict_substrings.values()):
