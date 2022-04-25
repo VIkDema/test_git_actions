@@ -142,8 +142,12 @@
                   with open('points.txt', 'r') as f:
                       text = f.read()
                   substrings = text[0:-1].split('\n')
+                  
+                  print(substrings)
               
                   dict_substrings = dict.fromkeys(substrings, False)
+                  
+                  print(dict_substrings)
               
                   for key in dict_substrings:
                       for str in markdown:
