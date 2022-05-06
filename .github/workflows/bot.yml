@@ -204,8 +204,10 @@
             body: |
               ## Автоматическая проверка.
               **Результат**:  Проверка пройдена.
-              **Информация о PR**: ${{env.INFO}}
-              **Недочеты**: ${{env.WARNINGS != '' &&  env.WARNINGS || '-' }}
+              **Информация о PR**: 
+              ${{env.INFO}}
+              **Недочеты**: 
+              ${{env.WARNINGS != '' &&  env.WARNINGS || '-' }}
         - name: Есть ошибки
           if: ${{ env.CRITICAL  == '' && env.ERRORS != ''}}
           uses: andrewmusgrave/automatic-pull-request-review@0.0.2
@@ -215,6 +217,9 @@
             body: |
               ## Автоматическая проверка.
               **Результат**: Проверка не пройдена.
-              **Информация о PR**: ${{env.INFO}}
-              **Детали**: ${{env.ERRORS}}
-              **Недочеты**: ${{env.WARNINGS != '' &&  env.WARNINGS || '-' }}
+              **Информация о PR**: 
+              ${{env.INFO}}
+              **Детали**: 
+              ${{env.ERRORS}}
+              **Недочеты**: 
+              ${{env.WARNINGS != '' &&  env.WARNINGS || '-' }}
