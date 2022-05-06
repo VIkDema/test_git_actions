@@ -193,7 +193,8 @@
             body: |
               ## Автоматическая проверка.
               **Результат**:  Проверка не пройдена.
-              **Детали**: ${{env.CRITICAL}}
+              **Детали**: 
+              ${{env.CRITICAL}}
         - name: Все хорошо
           if: ${{ env.CRITICAL  == '' && env.ERRORS == ''}}
           uses: andrewmusgrave/automatic-pull-request-review@0.0.2
