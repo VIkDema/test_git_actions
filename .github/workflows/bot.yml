@@ -165,7 +165,7 @@
                       notifier.error('Отсутствуют обязательные пункты: ')
                       for key in dict_substrings:
                           if not dict_substrings[key]:
-                              notifier.error('*'+key)
+                              notifier.error('* '+key)
           
           
               def start_analyzing(path):
