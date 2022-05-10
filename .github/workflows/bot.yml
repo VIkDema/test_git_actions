@@ -110,7 +110,7 @@
         - name : TESTRUN
           run: |
             python3 << END
-            points = eval(${{steps.config_check.outputs.points}})
+            points = eval("${{steps.config_check.outputs.points}}")
             #points = points[2:-2].split("', '")
             print(points[0])
             deadline = "${{steps.config_check.outputs.deadline}}"
