@@ -1,5 +1,5 @@
 {
-  "default_kernel":["python"],
+  "default_kernel":[],
   "settings":{
       "need_to_check_impersonality":false,
       "points":[
@@ -19,9 +19,9 @@
       "deadline":"2022-05-01",
       "kernel":["sage","python"]
     },
-    "task3": {
+    "lab3": {
       "deadline":"2022-05-01",
-      "kernel":[]
+      "kernel":["julia"]
     }
   }
 }
