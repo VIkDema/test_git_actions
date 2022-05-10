@@ -96,7 +96,10 @@
                 
                 if points and work:
                     deadline = work.get("deadline")
-                    language = work.get("kernel")
+                    if work.get("kernel"):
+                        language = work.get("kernel")
+                    else:
+                        language = config.get("default_kernel")
                     
                     print(f'::set-output name=points::'+str(points))
                     print(f'::set-output name=deadline::'+deadline)
@@ -111,10 +114,10 @@
           run: |
             python3 << END
             points = eval("${{steps.config_check.outputs.points}}")
-            #points = points[2:-2].split("', '")
             print(points[0])
             deadline = "${{steps.config_check.outputs.deadline}}"
             print(deadline)
+            language = eval("${{steps.config_check.outputs.language}}")
             END
         - name: Проверка дедлайнов
           if: ${{ env.CRITICAL  == ''}}
@@ -123,32 +126,20 @@
             python3 << END
             from datetime import datetime
             import pytz
-            import json
             ${{env.IMPORT_BOTNOTIFIER}}
             notifier = BotNotifier('$GITHUB_ENV','${{env.ERRORS}}','${{env.WARNINGS}}','${{env.INFO}}')
-            labnum = '${{steps.check_path.outputs.labnum}}'
-            try:
-              f = open("deadline.json", encoding='utf-8')
-              deadlines = json.load(f)
-              f.close()
-              dl = deadlines[labnum]
-              date_time_str = '${{github.event.pull_request.created_at}}'
-              timezone = pytz.timezone("Europe/Moscow")
-              date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%SZ").astimezone(timezone)
-              print('test1')
-              creation_date = str(date_time_obj.date())
-              creation_time = str(date_time_obj.time())
-              print('test2')
-              if creation_date <= dl:
-                notifier.info('Работа загружена: '+creation_date+' '+creation_time)
-              else:
-                notifier.info('Вы опоздали. Работа загружена: '+creation_date+' '+creation_time)
-              notifier.info('Дедлайн: '+dl)
-            except KeyError:
-              notifier.warning('Отсутствует дедлайн для данной лабораторной работы')
-            except FileNotFoundError:
-              print("No such file or directory: '{}'".format(filename))
-              notifier.warning('Не удалось найти файл с дедлайнами')
+            deadline = "${{steps.config_check.outputs.deadline}}"
+            date_time_str = '${{github.event.pull_request.created_at}}'
+            timezone = pytz.timezone("Europe/Moscow")
+            date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%SZ").astimezone(timezone)
+            creation_date = str(date_time_obj.date())
+            creation_time = str(date_time_obj.time())
+            if creation_date <= deadline:                
+              notifier.info('Работа загружена: '+creation_date+' '+creation_time)
+            else:
+              notifier.info('Работа загружена: '+creation_date+' '+creation_time)
+              notifier.error('Вы опоздали. Работа загружена: '+creation_date+' '+creation_time)
+              notifier.error('Дедлайн: '+dl)  
             notifier.set_env_and_close_runner()
             END
         - name: Проверка наличия пунктов
@@ -175,9 +166,8 @@
           
           
               def changePoints(markdown):
-                  with open('points.txt', 'r') as f:
-                      text = f.read()
-                  substrings = text[0:-1].split('\n')
+                  
+                  substrings = eval("${{steps.config_check.outputs.points}}")
                   
                   print(substrings)
               
@@ -213,6 +203,12 @@
                   notebook.close()
                   markdown, code, language = jsonParce(data)
                   notifier.info('Ядро: '+language)
+                  languages = eval("${{steps.config_check.outputs.language}}")
+                  if len(languages):
+                    if language not in languages:
+                      notifier.error('**Несоответствие требованиям по языку**')
+                      notifier.error('Ядро блокнота: ' + language)
+                      notifier.error('Разрешенные ядра: '  + str(languages))
                   changePoints(markdown)
           
           
