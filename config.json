@@ -1,0 +1,27 @@
+{
+  "default_kernel":["python"],
+  "settings":{
+      "need_to_check_impersonality":false,
+      "points":[
+        "Цель работы",
+        "Основные теоретические положения",
+        "Постановка задачи",
+        "Выполнение работы",
+        "Вывод"
+        ]
+  },
+  "works":{
+    "lab1": {
+      "deadline":"2022-05-01",
+      "kernel":[]
+    },
+    "lab2": {
+      "deadline":"2022-05-01",
+      "kernel":["sage","python"]
+    },
+    "task3": {
+      "deadline":"2022-05-01",
+      "kernel":[]
+    }
+  }
+}
