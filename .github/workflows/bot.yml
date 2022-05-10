@@ -139,7 +139,7 @@
             else:
               notifier.info('Работа загружена: '+creation_date+' '+creation_time)
               notifier.error('Вы опоздали. Работа загружена: '+creation_date+' '+creation_time)
-              notifier.error('Дедлайн: '+dl)  
+              notifier.error('Дедлайн: '+deadline)  
             notifier.set_env_and_close_runner()
             END
         - name: Проверка наличия пунктов
