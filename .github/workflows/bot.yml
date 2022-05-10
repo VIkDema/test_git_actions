@@ -110,10 +110,10 @@
         - name : TESTRUN
           run: |
             python3 << END
-            points = "${{steps.config_check.outputs.points}}"
-            points = points[2:-2].split("', '")
+            points = eval(${{steps.config_check.outputs.points}})
+            #points = points[2:-2].split("', '")
             print(points[0])
-            deadline = "${{steps.config_check.outputs.points}}"
+            deadline = ${{steps.config_check.outputs.deadline}}
             print(deadline)
             END
         - name: Проверка дедлайнов
