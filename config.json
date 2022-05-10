@@ -16,11 +16,11 @@
       "kernel":[]
     },
     "lab2": {
-      "deadline":"2022-05-01",
+      "deadline":"2022-05-13",
       "kernel":["sage","python"]
     },
     "lab3": {
-      "deadline":"2022-05-01",
+      "deadline":"2022-05-25",
       "kernel":["julia"]
     }
   }
