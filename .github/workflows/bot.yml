@@ -90,7 +90,6 @@
                 with open('config.json', 'r') as f:
                     config = json.load(f)
         
-                # Написать функцию на проверку корректности конфига
                 points = config.get("settings").get("points")
                 work = config.get("works").get("${{steps.check_path.outputs.labnum}}")
                 
@@ -105,19 +104,10 @@
                     print(f'::set-output name=deadline::'+deadline)
                     print(f'::set-output name=language::'+str(language))
                 else:
-                    print("Нет работы в конфиге")    
+                    notifier.critical("Нет работы в конфиге")    
         
             except FileNotFoundError:
-                print("No config in repository")
-            END
-        - name : TESTRUN
-          run: |
-            python3 << END
-            points = eval("${{steps.config_check.outputs.points}}")
-            print(points[0])
-            deadline = "${{steps.config_check.outputs.deadline}}"
-            print(deadline)
-            language = eval("${{steps.config_check.outputs.language}}")
+                notifier.critical("No config in repository")
             END
         - name: Проверка дедлайнов
           if: ${{ env.CRITICAL  == ''}}
@@ -172,9 +162,7 @@
                   print(substrings)
               
                   dict_substrings = dict.fromkeys(substrings, False)
-                  
-                  print(dict_substrings)
-              
+                
                   for key in dict_substrings:
                       for str in markdown:
                           re_key = r'^##\s+' + key
@@ -238,8 +226,6 @@
               **Результат**:  Проверка пройдена.
               **Информация о PR**: 
               ${{env.INFO}}
-              **Недочеты**: 
-              ${{env.WARNINGS != '' &&  env.WARNINGS || '-' }}
         - name: Есть ошибки
           if: ${{ env.CRITICAL  == '' && env.ERRORS != ''}}
           uses: andrewmusgrave/automatic-pull-request-review@0.0.2
@@ -253,5 +239,4 @@
               ${{env.INFO}}
               **Детали**: 
               ${{env.ERRORS}}
-              **Недочеты**: 
-              ${{env.WARNINGS != '' &&  env.WARNINGS || '-' }}
+
