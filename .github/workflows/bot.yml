@@ -86,6 +86,8 @@
           run: |
             python3 << END
             import json
+            ${{env.IMPORT_BOTNOTIFIER}}
+            notifier = BotNotifier('$GITHUB_ENV','${{env.ERRORS}}','${{env.WARNINGS}}','${{env.INFO}}')
             try:
                 with open('config.json', 'r') as f:
                     config = json.load(f)
