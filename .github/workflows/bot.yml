@@ -180,7 +180,7 @@
                       notifier.error('Некорректное название работы ')
                   
                   if not all(dict_substrings.values()):
-                      notifier.error('Отсутствуют обязательные пункты: ')
+                      notifier.error('**Отсутствуют обязательные пункты: **')
                       for key in dict_substrings:
                           if not dict_substrings[key]:
                               notifier.error('* '+key)
