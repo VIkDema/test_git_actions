@@ -110,6 +110,7 @@
         
             except FileNotFoundError:
                 notifier.critical("No config in repository")
+            notifier.set_env_and_close_runner()
             END
         - name: Проверка дедлайнов
           if: ${{ env.CRITICAL  == ''}}
@@ -188,11 +189,14 @@
               def start_analyzing(path):
                   try:
                       notebook = open(path, encoding='utf-8')
+                      print('file open')
                   except FileNotFoundError:
                       print("No file")
                   data = json.load(notebook)
+                  print('json load')
                   notebook.close()
                   markdown, code, language = jsonParce(data)
+                  print('json parced')
                   notifier.info('Ядро: '+language)
                   languages = eval("${{steps.config_check.outputs.language}}")
                   if len(languages):
@@ -204,6 +208,7 @@
           
           
               path = '${{steps.check_path.outputs.path}}'
+              print('start_analyzing')
               start_analyzing(path)
               notifier.set_env_and_close_runner()
               END
