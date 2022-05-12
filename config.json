@@ -13,15 +13,15 @@
   "works":{
     "lab1": {
       "deadline":"2022-05-01",
-      "kernel":[]
+      "kernel":["sage"]
     },
     "lab2": {
       "deadline":"2022-05-13",
-      "kernel":["sage","python"]
+      "kernel":["R"]
     },
     "lab3": {
       "deadline":"2022-05-25",
-      "kernel":["julia"]
+      "kernel":["python","julia"]
     }
   }
 }
