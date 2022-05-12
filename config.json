@@ -19,7 +19,7 @@
       "deadline":"2022-05-11",
       "kernel":["R"]
     },
-    "lab3": {
+    "task3": {
       "deadline":"2022-05-25",
       "kernel":["python","julia"]
     }
