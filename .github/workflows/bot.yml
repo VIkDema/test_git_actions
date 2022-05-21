@@ -44,11 +44,14 @@
         - uses: actions/checkout@v2
         - uses: actions/setup-python@v3
           with:
-            python-version: '3.9'
+            python-version: '3.7'
         - name: Установка библиотек
           run: |
+            pip install pyenchant
+            pip install pymorphy2[fast]
             python -m pip install --upgrade pip
             pip install pytz
+            sudo apt-get install myspell-ru
         - name: Имя PR
           run: echo ${{github.event.pull_request.title}}
         - name: Формирование пути до файла по PR и проверка, что файл существует
@@ -142,6 +145,10 @@
               python3 <<END
               import json
               import re
+              import pymorphy2
+              import enchant
+              import difflib
+              
               ${{env.IMPORT_BOTNOTIFIER}}
               notifier = BotNotifier('$GITHUB_ENV','${{env.ERRORS}}','${{env.WARNINGS}}','${{env.INFO}}')
               
@@ -170,6 +177,40 @@
                       r'^(В|в)ыполнила?\s+студент(ка)?\s+(гр\.|группы)\s+\d{4}\s[А-Я|A-Z][а-я|a-z]+\s[А-Я|A-Z][а-я|a-z]+,?\s+(В|в)ариант\s+?\d{1,2}\.?(\\n)?',
                      text):
                       notifier.error("Строка 2 - Некорректное название работы, не соотвествует шаблону <Выполнил студент гр. 2022 Иванов Иван, вариант N>")
+              def parse_russian_words(text): 
+                  res = re.findall(r'[а-яА-Я]+', text)
+                  return res
+              def check_words_for_impersonality(words):
+                  morph = pymorphy2.MorphAnalyzer()
+                  for word in words: 
+                      p = morph.parse(word)[0]
+                      warning = False
+                      if {'NPRO'} in p.tag and {'femn'} not in p.tag and {'masc'} not in p.tag and {'gent'} not in p.tag and {'3per'} not in p.tag: 
+                          warning = True
+                      if warning:
+                          print(p.tag)
+                          notifier.warning("Отчет должен быть в безличностной форме. Ошибка в слове: " + word)
+              def suggest_word(word, dictionary):
+                  suggestions = set(dictionary.suggest(word))
+                  if not len(suggestions):
+                      return
+                  sim = dict() 
+                  for _word in suggestions:
+                      measure = difflib.SequenceMatcher(None, word, _word).ratio()
+                      sim[measure] = _word
+                  if len(suggestions)>10:
+                      notifier.warning( "Ошибка в слове "+word+" Возможно в имели в виду:"+ sim[max(sim.keys())])
+              def check_proper_name(word):
+                  return 'А'< word[0] <'Я'
+              def check_words_for_spelling(words):
+                  dictionary = enchant.Dict("ru_RU")
+                  for word in words:
+                      if not dictionary.check(word) and len(word) > 3 and not check_proper_name(word):
+                          suggest_word(word, dictionary)
+              def check_for_impersonality_and_spelling(text):
+                  words = parse_russian_words(text)
+                  check_words_for_impersonality(words)
+                  check_words_for_spelling(words)
                   
               def changePoints(markdown):
                   
@@ -180,11 +221,14 @@
                   dict_substrings = dict.fromkeys(substrings, False)
                 
                   for key in dict_substrings:
-                      for str in markdown:
+                      for row in markdown:
                           re_key = r'^##\s+' + key
-                          if re.search(re_key, str):
+                          if re.search(re_key, row):
                               dict_substrings[key] = True
                               
+                  for row in markdown:
+                      check_for_impersonality_and_spelling(row)
+                      
                   check_title(markdown[0])
                   check_author(markdown[2])
                                     
@@ -233,7 +277,7 @@
               **Детали**: 
               ${{env.CRITICAL}}
         - name: Все хорошо
-          if: ${{ env.CRITICAL  == '' && env.ERRORS == ''}}
+          if: ${{ env.CRITICAL  == '' && env.ERRORS == '' && env.WARNINGS == ''}}
           uses: andrewmusgrave/automatic-pull-request-review@0.0.2
           with:
             repo-token: '${{ secrets.GITHUB_TOKEN }}'
@@ -243,6 +287,19 @@
               **Результат**:  Проверка пройдена.
               **Информация о PR**: 
               ${{env.INFO}}
+        - name: Все хорошо, но есть недочеты
+          if: ${{ env.CRITICAL  == '' && env.ERRORS == '' && env.WARNINGS != ''}}
+          uses: andrewmusgrave/automatic-pull-request-review@0.0.2
+          with:
+            repo-token: '${{ secrets.GITHUB_TOKEN }}'
+            event: 'APPROVE'
+            body: |
+              ## Автоматическая проверка.
+              **Результат**:  Проверка пройдена.
+              **Информация о PR**: 
+              ${{env.INFO}}
+              **Недочеты**: 
+              ${{env.WARNINGS}}
         - name: Есть ошибки
           if: ${{ env.CRITICAL  == '' && env.ERRORS != ''}}
           uses: andrewmusgrave/automatic-pull-request-review@0.0.2
