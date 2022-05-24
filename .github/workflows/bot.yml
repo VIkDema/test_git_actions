@@ -169,7 +169,7 @@
                   result = re.match(r'(#\s+(Практическая|Лабораторная)\sработа\s№\s?\d+\s*:)', text)
                   
                   if not result:
-                      notifier.error('Некорректное название работы, не найден загаловок')
+                      notifier.error('Некорректное название работы, не найден заголовок')
                   if len(text[len(result.group(0)):-1]) < 3:
                       notifier.error('Название работы пустое')
               def check_author(text):
