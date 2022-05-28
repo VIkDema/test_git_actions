@@ -153,17 +153,14 @@
               notifier = BotNotifier('$GITHUB_ENV','${{env.ERRORS}}','${{env.WARNINGS}}','${{env.INFO}}')
               
               def jsonParce(data):
-                  markdown = []
-                  code = []
-                  cells = data.get("cells")
-                  for cell in cells:
-                      if cell.get("cell_type") == "markdown":
-                          for md in cell.get("source"):
-                              markdown.append(md)
-                      elif cell.get("cell_type") == "code":
-                          for c in cell.get("source"):
-                              code.append(c)
-                  return markdown, code, data.get("metadata").get("kernelspec").get("language")
+                markdown = []
+                cells = data.get("cells")
+                for cell in cells:
+                    if cell.get("cell_type") == "markdown":
+                        for md in cell.get("source"):
+                            if md != "\n":
+                                markdown.append(md)
+                return markdown,  data.get("metadata").get("kernelspec").get("language")
           
               def check_title(text):
                   result = re.match(r'(#\s+(Практическая|Лабораторная)\sработа\s№\s?\d+\s*:)', text)
@@ -230,7 +227,7 @@
                       check_for_impersonality_and_spelling(row)
                       
                   check_title(markdown[0])
-                  check_author(markdown[2])
+                  check_author(markdown[1])
                                     
                   if not all(dict_substrings.values()):
                       notifier.error('**Отсутствуют обязательные пункты:**')
@@ -248,7 +245,7 @@
                   data = json.load(notebook)
                   print('json load')
                   notebook.close()
-                  markdown, code, language = jsonParce(data)
+                  markdown, language = jsonParce(data)
                   print('json parced')
                   notifier.info('Ядро: '+language)
                   languages = eval("${{steps.config_check.outputs.language}}")
